@@ -15,12 +15,7 @@ require("dotenv").config();
 
 // Cors config - allow all
 app.use(cors());
-app.options("*", cors()); // enable pre-flight for DELETE request
-
-/*
-    Middlewares that allow Express to accept
-    form and JSON data in requests
-*/
+app.options("*", cors());
 
 const viewsPath = path.join(__dirname, "./views");
 app.set("view engine", "hbs");
@@ -45,6 +40,7 @@ app.get("/temp", async (req, res) => {
 			})
 		);
 	}
+	// Tries to scrap a website for information otherwise throws an error
 	try {
 		(async function () {
 			try {
@@ -114,5 +110,5 @@ app.use((req, res, next) => {
 //   });
 // });
 
-const PORT = process.env.SERVER_PORT || 1337;
+const PORT = process.env.SERVER_PORT;
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));
