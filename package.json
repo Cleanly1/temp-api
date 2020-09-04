@@ -2,7 +2,7 @@
   "name": "temp-api",
   "version": "1.0.0",
   "description": "A simple api for getting water and air tempetures from Gotland(Sweden)",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js"
