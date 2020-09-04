@@ -5,6 +5,8 @@ const puppeteer = require("puppeteer");
 const app = express();
 const cors = require("cors");
 
+const PORT = process.env.SERVER_PORT || 1337;
+
 require("dotenv").config();
 
 // Logging utility
@@ -20,8 +22,8 @@ app.options("*", cors());
 const viewsPath = path.join(__dirname, "./views");
 app.set("view engine", "hbs");
 app.set("views", viewsPath);
-
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "./public")));
+// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Routes
@@ -79,7 +81,7 @@ app.get("/temp", async (req, res) => {
 				);
 				await browser.close();
 				temps = await temps.filter((temp) => temp);
-				console.log(temps.join(`\n`));
+				//console.log(temps.join(`\n`));
 
 				res.status(200).send(JSON.stringify(temps));
 			} catch (e) {
@@ -110,5 +112,4 @@ app.use((req, res, next) => {
 //   });
 // });
 
-const PORT = process.env.SERVER_PORT;
 app.listen(PORT, () => console.log(`Server is running on ${PORT}`));
