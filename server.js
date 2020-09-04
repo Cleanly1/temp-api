@@ -5,7 +5,7 @@ const puppeteer = require("puppeteer");
 const app = express();
 const cors = require("cors");
 
-const PORT = process.env.SERVER_PORT || 1337;
+const PORT = process.env.PORT || 1337;
 
 require("dotenv").config();
 
