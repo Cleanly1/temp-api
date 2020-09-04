@@ -98,12 +98,11 @@ app.get("/temp", async (req, res) => {
 });
 
 // Handle unsupported routes
-app.use((req, res, next) => {
-	const error = new Error("This is not the route you are looking for");
-	error.status = 404;
-	next(error);
-});
-
+// app.use((req, res, next) => {
+// 	const error = new Error("This is not the route you are looking for");
+// 	error.status = 404;
+// 	next(error);
+// });
 // Handle errors thrown in routes
 // app.use((error, req, res, next) => {
 //   logger.error(error);
