@@ -33,6 +33,9 @@ app.use(bodyParser.json());
 app.get("/", (req, res) => {
 	res.render("index");
 });
+app.get(" ", (req, res) => {
+	res.render("index");
+});
 
 app.get("/temp", async (req, res) => {
 	if (process.env.API_KEY !== req.query.apiKey) {
@@ -41,55 +44,56 @@ app.get("/temp", async (req, res) => {
 				error: "You don´t have permisson to make a request",
 			})
 		);
-	}
-	// Tries to scrap a website for information otherwise throws an error
-	try {
-		(async function () {
-			try {
-				const browser = await puppeteer.launch();
-				const page = await browser.newPage();
+	} else {
+		// Tries to scrap a website for information otherwise throws an error
+		try {
+			(async function () {
+				try {
+					const browser = await puppeteer.launch();
+					const page = await browser.newPage();
 
-				await page.setViewport({
-					width: 520,
-					height: 480,
-					deviceScaleFactor: 1,
-				});
+					await page.setViewport({
+						width: 520,
+						height: 480,
+						deviceScaleFactor: 1,
+					});
 
-				await page.goto("https://gotlandsenergi.se/badkarta/");
-				let temps = await page.$$eval(
-					".buoys-measurment-list td",
-					function (temps) {
-						let i = 0;
-						let tempArray = [];
-						return temps.map(function (temp) {
-							i++;
-							tempArray.push(temp.textContent);
-							if (i == 3) {
-								i = 0;
-								const returnObject = {
-									location: tempArray[0],
-									data: {
-										airTemp: tempArray[1],
-										waterTemp: tempArray[2],
-									},
-								};
-								tempArray = [];
-								return returnObject;
-							}
-						});
-					}
-				);
-				await browser.close();
-				temps = await temps.filter((temp) => temp);
-				//console.log(temps.join(`\n`));
+					await page.goto("https://gotlandsenergi.se/badkarta/");
+					let temps = await page.$$eval(
+						".buoys-measurment-list td",
+						function (temps) {
+							let i = 0;
+							let tempArray = [];
+							return temps.map(function (temp) {
+								i++;
+								tempArray.push(temp.textContent);
+								if (i == 3) {
+									i = 0;
+									const returnObject = {
+										location: tempArray[0],
+										data: {
+											airTemp: tempArray[1],
+											waterTemp: tempArray[2],
+										},
+									};
+									tempArray = [];
+									return returnObject;
+								}
+							});
+						}
+					);
+					await browser.close();
+					temps = await temps.filter((temp) => temp);
+					//console.log(temps.join(`\n`));
 
-				res.status(200).send(JSON.stringify(temps));
-			} catch (e) {
-				console.log(e);
-			}
-		})();
-	} catch (error) {
-		res.status(404).send(`Couldn´t find any temperatures this time`);
+					res.status(200).send(JSON.stringify(temps));
+				} catch (e) {
+					console.log(e);
+				}
+			})();
+		} catch (error) {
+			res.status(404).send(`Couldn´t find any temperatures this time`);
+		}
 	}
 });
 
