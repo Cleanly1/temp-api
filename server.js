@@ -46,7 +46,9 @@ app.get("/temp", async (req, res) => {
 		try {
 			(async function () {
 				try {
-					const browser = await puppeteer.launch();
+					const browser = await puppeteer.launch({
+						args: ["--no-sandbox"],
+					});
 					const page = await browser.newPage();
 
 					await page.setViewport({
@@ -81,7 +83,6 @@ app.get("/temp", async (req, res) => {
 					);
 					await browser.close();
 					temps = await temps.filter((temp) => temp);
-					//console.log(temps.join(`\n`));
 
 					res.status(200).send(JSON.stringify(temps));
 				} catch (e) {
