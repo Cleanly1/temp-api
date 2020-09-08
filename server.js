@@ -33,9 +33,6 @@ app.use(bodyParser.json());
 app.get("/", (req, res) => {
 	res.render("index");
 });
-app.get(" ", (req, res) => {
-	res.render("index");
-});
 
 app.get("/temp", async (req, res) => {
 	if (process.env.API_KEY !== req.query.apiKey) {
@@ -92,7 +89,7 @@ app.get("/temp", async (req, res) => {
 				}
 			})();
 		} catch (error) {
-			res.status(404).send(`Couldn´t find any temperatures this time`);
+			res.status(500).send(`Couldn´t find any temperatures this time`);
 		}
 	}
 });
