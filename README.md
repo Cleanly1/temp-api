@@ -2,4 +2,5 @@
 This is a very basic api to get tempeture information around Gotland to your own website.
 
 ## How to get access
-Please contact [Me](https://github.com/Cleanly1) for your own API-key
+Right now this api is not available bacause the company behind the website I gather my information have taken it down for the summer.
+
