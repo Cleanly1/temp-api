@@ -42,56 +42,76 @@ app.get("/temp", async (req, res) => {
 			})
 		);
 	} else {
-		// Tries to scrap a website for information otherwise throws an error
-		try {
-			(async function () {
-				try {
-					const browser = await puppeteer.launch({
-						args: ["--no-sandbox"],
-					});
-					const page = await browser.newPage();
+		// Tries to scrap a website for information otherwise throws an erro
+		(async function () {
+			try {
+				const browser = await puppeteer.launch({
+					args: ["--no-sandbox"],
+				});
+				const page = await browser.newPage();
 
-					await page.setViewport({
-						width: 520,
-						height: 480,
-						deviceScaleFactor: 1,
-					});
+				await page.setViewport({
+					width: 520,
+					height: 480,
+					deviceScaleFactor: 1,
+				});
 
-					await page.goto("https://gotlandsenergi.se/badkarta/");
-					let temps = await page.$$eval(
-						".buoys-measurment-list td",
-						function (temps) {
-							let i = 0;
-							let tempArray = [];
-							return temps.map(function (temp) {
-								i++;
-								tempArray.push(temp.textContent);
-								if (i == 3) {
-									i = 0;
-									const returnObject = {
-										location: tempArray[0],
-										data: {
-											airTemp: tempArray[1],
-											waterTemp: tempArray[2],
-										},
-									};
-									tempArray = [];
-									return returnObject;
-								}
-							});
-						}
+				await page.goto("https://gotlandsenergi.se/badkarta/");
+
+				const url = page.url();
+
+				let temps = await page.$$eval(
+					".buoys-measurment-list td",
+					function (temps) {
+						let i = 0;
+						let tempArray = [];
+						return temps.map(function (temp) {
+							i++;
+							tempArray.push(temp.textContent);
+							if (i == 3) {
+								i = 0;
+								const returnObject = {
+									location: tempArray[0],
+									data: {
+										airTemp: tempArray[1],
+										waterTemp: tempArray[2],
+									},
+								};
+								tempArray = [];
+								return returnObject;
+							}
+						});
+					}
+				);
+				await browser.close();
+				temps = await temps.filter((temp) => temp);
+
+				if (
+					temps.length === 0 &&
+					url === "https://gotlandsenergi.se/badkarta/"
+				) {
+					res.status(500).send(
+						JSON.stringify({
+							error: `Couldn´t find any temperatures this time`,
+							reponse: temps,
+						})
 					);
-					await browser.close();
-					temps = await temps.filter((temp) => temp);
-
-					res.status(200).send(JSON.stringify(temps));
-				} catch (e) {
-					console.log(e);
+					return;
+				} else if (url !== "https://gotlandsenergi.se/badkarta/") {
+					res.status(503).send(
+						JSON.stringify({
+							error: `Service not available`,
+							response: [],
+						})
+					);
+					return;
 				}
-			})();
-		} catch (error) {
-			res.status(500).send(`Couldn´t find any temperatures this time`);
-		}
+
+				res.status(200).send(JSON.stringify(temps));
+			} catch (e) {
+				console.log(e);
+			}
+		})();
 	}
 });
 
