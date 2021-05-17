@@ -56,7 +56,9 @@ app.get("/temp", async (req, res) => {
 					deviceScaleFactor: 1,
 				});
 
-				await page.goto("https://gotlandsenergi.se/badkarta/");
+				await page.goto(
+					"https://gotlandsenergi.se/foretag/geab-iot/geabkollen//"
+				);
 
 				const url = page.url();
 
@@ -88,7 +90,8 @@ app.get("/temp", async (req, res) => {
 
 				if (
 					temps.length === 0 &&
-					url === "https://gotlandsenergi.se/badkarta/"
+					url ===
+						"https://gotlandsenergi.se/foretag/geab-iot/geabkollen//"
 				) {
 					res.status(500).send(
 						JSON.stringify({
@@ -97,7 +100,10 @@ app.get("/temp", async (req, res) => {
 						})
 					);
 					return;
-				} else if (url !== "https://gotlandsenergi.se/badkarta/") {
+				} else if (
+					url !==
+					"https://gotlandsenergi.se/foretag/geab-iot/geabkollen//"
+				) {
 					res.status(503).send(
 						JSON.stringify({
 							error: `Service not available`,
